@@ -1,12 +1,12 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html>
 
-<t:webTemplate>
-	<head>
+<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Users List</title>
-	<!-- <link href="/resources/CSS/bootstrap.css" rel="stylesheet" type="text/css" />
-	<link href="/resources/CSS/app.css" rel="stylesheet" type="text/css" /> -->
+	<link href="/resources/CSS/bootstrap.css" rel="stylesheet" type="text/css" />
+	<link href="/resources/CSS/app.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -46,4 +46,4 @@
 	 	</div>
    	</div>
 </body>
-</t:webTemplate>
+</html>
