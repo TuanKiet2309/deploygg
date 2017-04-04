@@ -12,6 +12,6 @@ public class GreetingController {
 	@RequestMapping("/")
     public String hello() {
         
-        return "jsp/index";
+        return "jsp/pagebody1";
     }
 }

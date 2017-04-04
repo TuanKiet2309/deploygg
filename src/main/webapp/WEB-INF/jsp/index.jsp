@@ -331,7 +331,9 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side frame
 
 				</div></div>
 			</div>
-		</div></td><td><div id="pnRight">
+		</div>
+		</td>
+		<td><div id="pnRight">
 			<div id="pnRightDisplay" style="padding:0px 0px 0px 6px;width:300px;float:left">
 				<div id='ctl06_portlet_b633be64-8363-4e53-9952-6acf34d3e9e9' style="float:left;"><div>
 					
