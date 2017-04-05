@@ -3,6 +3,10 @@ package com.websystique.springmvc.controller;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import net.htmlparser.jericho.*;
+import java.util.*;
+import java.io.*;
+import java.net.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -53,14 +57,27 @@ public class AppController {
 	
 	/**
 	 * This method will list all existing users.
+	 * @throws IOException 
+	 * @throws MalformedURLException 
 	 */
 	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
-	public String listUsers(ModelMap model) {
+	public String listUsers(ModelMap model) throws MalformedURLException, IOException {
+		String sourceUrlString= "D:/Education/Projects/JV_Dien_Toan_Dam_May/WebKhoaCLC/src/main/test.html";
+        String s="";
+		try (BufferedReader br = new BufferedReader(new FileReader(sourceUrlString))) {
 
-		List<User> users = userService.findAllUsers();
-		model.addAttribute("users", users);
+			String sCurrentLine;
+
+			while ((sCurrentLine = br.readLine()) != null) {
+				s+= sCurrentLine;
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("editor1", s);
 		//return "views/userslist";
-		return "jsp/pagebody1";
+		return "jsp/ckediter";
 	}
 
 	/**

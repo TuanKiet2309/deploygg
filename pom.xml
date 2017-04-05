@@ -22,6 +22,26 @@
        <version>1.4.3.RELEASE</version>
    </parent>
   <dependencies>
+  <!-- https://mvnrepository.com/artifact/net.htmlparser.jericho/jericho-html -->
+	<dependency>
+	    <groupId>net.htmlparser.jericho</groupId>
+	    <artifactId>jericho-html</artifactId>
+	    <version>3.3</version>
+	</dependency>
+  
+  <!-- https://mvnrepository.com/artifact/org.htmlparser/htmlparser -->
+		<dependency>
+		    <groupId>org.htmlparser</groupId>
+		    <artifactId>htmlparser</artifactId>
+		    <version>2.1</version>
+		</dependency>
+  
+	<!--HTML editor-->
+		<dependency>
+		    <groupId>com.ckeditor</groupId>
+		    <artifactId>ckeditor-java-core</artifactId>
+		    <version>3.5.3</version>
+		</dependency>
   <!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
