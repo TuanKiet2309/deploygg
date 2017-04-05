@@ -62,20 +62,10 @@ public class AppController {
 	 */
 	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
 	public String listUsers(ModelMap model) throws MalformedURLException, IOException {
-		String sourceUrlString= "D:/Education/Projects/JV_Dien_Toan_Dam_May/WebKhoaCLC/src/main/test.html";
-        String s="";
-		try (BufferedReader br = new BufferedReader(new FileReader(sourceUrlString))) {
-
-			String sCurrentLine;
-
-			while ((sCurrentLine = br.readLine()) != null) {
-				s+= sCurrentLine;
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		model.addAttribute("editor1", s);
+		UserDocument document = userDocumentService.findById(2);
+		byte[] file = document.getContent();
+		String jsp=new String(file);
+		model.addAttribute("editor1", jsp);
 		//return "views/userslist";
 		return "jsp/ckediter";
 	}
