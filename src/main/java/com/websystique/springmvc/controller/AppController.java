@@ -13,16 +13,22 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.websystique.springmvc.model.FileBucket;
@@ -214,7 +220,12 @@ public class AppController {
 			return "redirect:/add-document-"+userId;
 		}
 	}
-	
+	@RequestMapping(value="/save", method = RequestMethod.GET)
+    public String listSearchFiles(@RequestParam("text") String editor1, Model model) throws IOException {
+		//System.out.println(editor1);
+        return "jsp/ckediter";
+    }
+
 	private void saveDocument(FileBucket fileBucket, User user) throws IOException{
 		
 		UserDocument document = new UserDocument();
