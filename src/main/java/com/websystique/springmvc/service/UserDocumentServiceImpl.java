@@ -16,24 +16,12 @@ public class UserDocumentServiceImpl implements UserDocumentService{
 	@Autowired
 	UserDocumentDao dao;
 
-	public UserDocument findById(int id) {
-		return dao.findById(id);
+	public UserDocument findByPath(String path) {
+		return dao.findByPath(path);
 	}
 
-	public List<UserDocument> findAll() {
-		return dao.findAll();
-	}
-
-	public List<UserDocument> findAllByUserId(int userId) {
-		return dao.findAllByUserId(userId);
-	}
-	
 	public void saveDocument(UserDocument document){
 		dao.save(document);
 	}
 
-	public void deleteById(int id){
-		dao.deleteById(id);
-	}
-	
 }

@@ -7,6 +7,7 @@
 	window.onload = function()
 	{
 		var editor;
+		document.getElementById('textArea').style.display = "none";
 	};
 	function edit(){
 	    editor = CKEDITOR.replace('editor1');
@@ -14,23 +15,30 @@
 	
 	function save(){
 		if (CKEDITOR.instances['editor1']) {
+			
 			var x = document.getElementById("editor1");
-			x.innerHTML=editor.getData();
-			alert(x.innerHTML);
+			
+			document.getElementById('textArea').style.display = "block";
+		    document.getElementById('textArea').value=editor.getData();
+			
 			CKEDITOR.instances['editor1'].destroy();
-			} 
+			
+			
+		}
 	};
 </script>
 <body>
-	<form method="POST"  action="/save">
+	<form method="post" action="/" enctype="multipart/form-data" id="divdata">
 			
             <div name="editor1" id="editor1" rows="10" cols="80" var="editor1">
                 ${editor1}
             </div>
-            <p>
+            <input type="text" id="textArea" name="textArea">
             <input type="button" value="Edit" onclick="edit()">
-            <input  type="button" value="Save" onclick="save()"></p>
+            <input  type="submit" value="Save" onclick="save()">
+            
                  
         </form>
 </body>
+
 </t:webTemplate>

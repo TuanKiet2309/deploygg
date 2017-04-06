@@ -7,7 +7,10 @@ import net.htmlparser.jericho.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -66,177 +69,53 @@ public class AppController {
 	 * @throws IOException 
 	 * @throws MalformedURLException 
 	 */
-	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
-	public String listUsers(ModelMap model) throws MalformedURLException, IOException {
-		UserDocument document = userDocumentService.findById(2);
+	@RequestMapping(value = { "/","/Default.aspx" }, method = RequestMethod.GET)
+	public String getPage(ModelMap model, HttpServletRequest request) throws MalformedURLException, IOException {
+		String pageId = request.getParameter("PageId");
+		String articleId = request.getParameter("ArticleId");
+		UserDocument document;
+		document = userDocumentService.findByPath("/");
+		if(pageId!=null)
+			document = userDocumentService.findByPath(pageId);
+		else if (articleId!=null)
+			document = userDocumentService.findByPath(articleId);
 		byte[] file = document.getContent();
 		String jsp=new String(file);
 		model.addAttribute("editor1", jsp);
-		//return "views/userslist";
 		return "jsp/ckediter";
 	}
-
-	/**
-	 * This method will provide the medium to add a new user.
-	 */
-	@RequestMapping(value = { "/newuser" }, method = RequestMethod.GET)
-	public String newUser(ModelMap model) {
-		User user = new User();
-		model.addAttribute("user", user);
-		model.addAttribute("edit", false);
-		return "views/registration";
-	}
-
-	/**
-	 * This method will be called on form submission, handling POST request for
-	 * saving user in database. It also validates the user input
-	 */
-	@RequestMapping(value = { "/newuser" }, method = RequestMethod.POST)
-	public String saveUser(@Valid User user, BindingResult result,
-			ModelMap model) {
-
-		if (result.hasErrors()) {
-			return "views/registration";
+	@RequestMapping(value = { "/","/Default.aspx" }, method = RequestMethod.POST)
+	public String postPage(ModelMap model, @RequestParam("textArea") String editor, HttpServletRequest request) throws MalformedURLException, IOException {
+		String pageId = request.getParameter("PageId");
+		String articleId = request.getParameter("ArticleId");
+		User user = userService.findById(1);
+		if(pageId!=null)
+		{
+			saveDocument(pageId ,editor, user);
+			return "redirect:/Default.aspx?PageId="+pageId;
 		}
-
-		/*
-		 * Preferred way to achieve uniqueness of field [sso] should be implementing custom @Unique annotation 
-		 * and applying it on field [sso] of Model class [User].
-		 * 
-		 * Below mentioned peace of code [if block] is to demonstrate that you can fill custom errors outside the validation
-		 * framework as well while still using internationalized messages.
-		 * 
-		 */
-		if(!userService.isUserSSOUnique(user.getId(), user.getSsoId())){
-			FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getSsoId()}, Locale.getDefault()));
-		    result.addError(ssoError);
-			return "views/registration";
+		else if (articleId!=null)
+		{
+			saveDocument(articleId ,editor, user);
+			return "redirect:/Default.aspx?ArticleId="+articleId;
 		}
+		saveDocument("/" ,editor, user);
 		
-		userService.saveUser(user);
-		
-		model.addAttribute("user", user);
-		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " registered successfully");
-		//return "success";
-		return "views/registrationsuccess";
+		return "redirect:/";
 	}
 
-
-	/**
-	 * This method will provide the medium to update an existing user.
-	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.GET)
-	public String editUser(@PathVariable String ssoId, ModelMap model) {
-		User user = userService.findBySSO(ssoId);
-		model.addAttribute("user", user);
-		model.addAttribute("edit", true);
-		return "views/registration";
-	}
-	
-	/**
-	 * This method will be called on form submission, handling POST request for
-	 * updating user in database. It also validates the user input
-	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.POST)
-	public String updateUser(@Valid User user, BindingResult result,
-			ModelMap model, @PathVariable String ssoId) {
-
-		if (result.hasErrors()) {
-			return "views/registration";
-		}
-
-		userService.updateUser(user);
-
-		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
-		return "views/registrationsuccess";
-	}
-
-	
-	/**
-	 * This method will delete an user by it's SSOID value.
-	 */
-	@RequestMapping(value = { "/delete-user-{ssoId}" }, method = RequestMethod.GET)
-	public String deleteUser(@PathVariable String ssoId) {
-		userService.deleteUserBySSO(ssoId);
-		return "redirect:/list";
-	}
-	
-
-	
-	@RequestMapping(value = { "/add-document-{userId}" }, method = RequestMethod.GET)
-	public String addDocuments(@PathVariable int userId, ModelMap model) {
-		User user = userService.findById(userId);
-		model.addAttribute("user", user);
-
-		FileBucket fileModel = new FileBucket();
-		model.addAttribute("fileBucket", fileModel);
-
-		List<UserDocument> documents = userDocumentService.findAllByUserId(userId);
-		model.addAttribute("documents", documents);
-		
-		return "views/managedocuments";
-	}
-	
-
-	@RequestMapping(value = { "/download-document-{userId}-{docId}" }, method = RequestMethod.GET)
-	public String downloadDocument(@PathVariable int userId, @PathVariable int docId, HttpServletResponse response) throws IOException {
-		UserDocument document = userDocumentService.findById(docId);
-		response.setContentType(document.getType());
-        response.setContentLength(document.getContent().length);
-        response.setHeader("Content-Disposition","attachment; filename=\"" + document.getName() +"\"");
- 
-        FileCopyUtils.copy(document.getContent(), response.getOutputStream());
- 
- 		return "redirect:/add-document-"+userId;
-	}
-
-	@RequestMapping(value = { "/delete-document-{userId}-{docId}" }, method = RequestMethod.GET)
-	public String deleteDocument(@PathVariable int userId, @PathVariable int docId) {
-		userDocumentService.deleteById(docId);
-		return "redirect:/add-document-"+userId;
-	}
-
-	@RequestMapping(value = { "/add-document-{userId}" }, method = RequestMethod.POST)
-	public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable int userId) throws IOException{
-		
-		if (result.hasErrors()) {
-			System.out.println("validation errors");
-			User user = userService.findById(userId);
-			model.addAttribute("user", user);
-
-			List<UserDocument> documents = userDocumentService.findAllByUserId(userId);
-			model.addAttribute("documents", documents);
-			
-			return "views/managedocuments";
-		} else {
-			
-			System.out.println("Fetching file");
-			
-			User user = userService.findById(userId);
-			model.addAttribute("user", user);
-
-			saveDocument(fileBucket, user);
-
-			return "redirect:/add-document-"+userId;
-		}
-	}
-	@RequestMapping(value="/save", method = RequestMethod.GET)
-    public String listSearchFiles(@RequestParam("text") String editor1, Model model) throws IOException {
-		//System.out.println(editor1);
-        return "jsp/ckediter";
-    }
-
-	private void saveDocument(FileBucket fileBucket, User user) throws IOException{
-		
+	private void saveDocument(String path, String text, User user) throws IOException{
 		UserDocument document = new UserDocument();
 		
-		MultipartFile multipartFile = fileBucket.getFile();
-		
-		document.setName(multipartFile.getOriginalFilename());
-		document.setDescription(fileBucket.getDescription());
-		document.setType(multipartFile.getContentType());
-		document.setContent(multipartFile.getBytes());
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	    Date date = new Date();
+	    
+		document.setPath(path);
+		document.setDescription("test");
+		document.setType("type/html");
+		document.setContent(text.getBytes());
 		document.setUser(user);
+		document.setDate(dateFormat.format(date));
 		userDocumentService.saveDocument(document);
 	}
 	

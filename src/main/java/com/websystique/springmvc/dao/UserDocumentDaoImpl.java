@@ -3,6 +3,7 @@ package com.websystique.springmvc.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -38,6 +39,15 @@ public class UserDocumentDaoImpl extends AbstractDao<Integer, UserDocument> impl
 	public void deleteById(int id) {
 		UserDocument document =  getByKey(id);
 		delete(document);
+	}
+
+	@Override
+	public UserDocument findByPath(String path) {
+		Criteria crit = createEntityCriteria();
+		crit.add(Restrictions.eq("path", path));
+		crit.addOrder(Order.desc("datetime"));
+		List<UserDocument> documents =  (List<UserDocument>)crit.list();		
+		return documents.get(0);
 	}
 
 }
