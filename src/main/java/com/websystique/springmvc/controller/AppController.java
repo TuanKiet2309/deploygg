@@ -69,54 +69,196 @@ public class AppController {
 	 * @throws IOException 
 	 * @throws MalformedURLException 
 	 */
-	@RequestMapping(value = { "/","/Default.aspx" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/" }, method = RequestMethod.GET)
 	public String getPage(ModelMap model, HttpServletRequest request) throws MalformedURLException, IOException {
-		String pageId = request.getParameter("PageId");
-		String articleId = request.getParameter("ArticleId");
+		String Id = request.getParameter("Id");
 		UserDocument document;
-		document = userDocumentService.findByPath("/");
-		if(pageId!=null)
-			document = userDocumentService.findByPath(pageId);
-		else if (articleId!=null)
-			document = userDocumentService.findByPath(articleId);
-		byte[] file = document.getContent();
-		String jsp=new String(file);
-		model.addAttribute("editor1", jsp);
+		UserDocument deadline;
+		UserDocument session;
+		UserDocument keylink;
+		byte[] file;
+		String jsp="";
+		String deadlinepage="";
+		String sessionpage="";
+		String keylinkpage="";
+		if(Id==null)
+			Id="1";
+		document = userDocumentService.findById(Integer.parseInt(Id));
+		if(document!=null){
+			file = document.getContent();
+			jsp=new String(file);
+		}
+		
+		String lastnew = loadTop3News();
+		
+		deadline = userDocumentService.findByPath("/deadline");
+		file = deadline.getContent();
+		deadlinepage = new String(file);
+		
+		session = userDocumentService.findByPath("/session");
+		file = session.getContent();
+		sessionpage = new String(file);
+		
+		keylink = userDocumentService.findByPath("/keylink");
+		file = keylink.getContent();
+		keylinkpage = new String(file);
+
+		model.addAttribute("leftPage", jsp);
+		model.addAttribute("listtb_phong", lastnew);
+		model.addAttribute("important_deadlines", deadlinepage);
+		model.addAttribute("special_session", sessionpage);
+		model.addAttribute("key_links", keylinkpage);
 		return "jsp/ckediter";
 	}
-	@RequestMapping(value = { "/","/Default.aspx" }, method = RequestMethod.POST)
-	public String postPage(ModelMap model, @RequestParam("textArea") String editor, HttpServletRequest request) throws MalformedURLException, IOException {
-		String pageId = request.getParameter("PageId");
-		String articleId = request.getParameter("ArticleId");
+	@RequestMapping(value = { "/" }, method = RequestMethod.POST)
+	public String postPage(ModelMap model, @RequestParam("textArea1") String editor1,
+			@RequestParam("textArea2") String editor2,
+			@RequestParam("textArea3") String editor3,
+			@RequestParam("textArea4") String editor4,
+			HttpServletRequest request) throws MalformedURLException, IOException {
+		String Id = request.getParameter("Id");
+		System.out.println(Id);
+		UserDocument document;
 		User user = userService.findById(1);
-		if(pageId!=null)
-		{
-			saveDocument(pageId ,editor, user);
-			return "redirect:/Default.aspx?PageId="+pageId;
+		if(editor1!=""){
+			if(Id!=null)
+			{
+				document = userDocumentService.findById(Integer.parseInt(Id));
+				System.out.println(document);
+				if(document!=null){
+					updateDocument("/", Integer.parseInt(Id), editor1,null, user);
+				}
+				else
+					saveDocument("/",editor1,null, user);
+				
+				return "redirect:/?Id="+Id;
+			}
+			else
+			{
+				document = userDocumentService.findById(1);
+				if(document!=null){
+					updateDocument("/", 1, editor1,null, user);
+				}
+				else
+					updateDocument("/", 1, editor1,null, user);
+				
+				return "redirect:/";
+			}
 		}
-		else if (articleId!=null)
-		{
-			saveDocument(articleId ,editor, user);
-			return "redirect:/Default.aspx?ArticleId="+articleId;
+		else if(editor2!=""){
+			if(Id!=null)
+			{
+				saveDocument("/deadline",editor2,null, user);
+				
+				return "redirect:/?Id="+Id;
+			}
+			else
+			{
+				saveDocument("/deadline",editor2,null, user);
+				
+				return "redirect:/";
+			}
+			
 		}
-		saveDocument("/" ,editor, user);
+		else if(editor3!=""){
+			if(Id!=null)
+			{
+				saveDocument("/session",editor3,null, user);
+				
+				return "redirect:/?Id="+Id;
+			}
+			else
+			{
+				saveDocument("/session",editor3,null, user);
+				
+				return "redirect:/";
+			}
+			
+		}
+		else if(editor4!=""){
+			if(Id!=null)
+			{
+				saveDocument("/keylink",editor4,null, user);
+				
+				return "redirect:/?Id="+Id;
+			}
+			else
+			{
+				saveDocument("/keylink",editor4,null, user);
+				
+				return "redirect:/";
+			}
+			
+		}
+		return "redirect:/?Id="+Id;
 		
-		return "redirect:/";
+	}
+	@RequestMapping(value = { "/edit" }, method = RequestMethod.GET)
+	public String getUploadPage(ModelMap model) throws MalformedURLException, IOException {
+		return "jsp/uploadnews";
+	}
+	@RequestMapping(value = { "/edit" }, method = RequestMethod.POST)
+	public String postUploadPage(ModelMap model, @RequestParam("body") String editor, @RequestParam("description") String description) throws MalformedURLException, IOException {
+		User user = userService.findById(1);
+		saveDocument("/news" ,editor,description, user);
+		return "redirect:/edit";
 	}
 
-	private void saveDocument(String path, String text, User user) throws IOException{
+	private void saveDocument(String path, String text,String decription, User user) throws IOException{
 		UserDocument document = new UserDocument();
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	    Date date = new Date();
-	    
 		document.setPath(path);
-		document.setDescription("test");
+		if(decription==null)
+			document.setDescription("test");
+		else
+			document.setDescription(decription);
 		document.setType("type/html");
 		document.setContent(text.getBytes());
 		document.setUser(user);
 		document.setDate(dateFormat.format(date));
 		userDocumentService.saveDocument(document);
+	}
+	private void updateDocument(String path,int id, String text,String decription, User user) throws IOException{
+		UserDocument document = new UserDocument();
+		
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	    Date date = new Date();
+	    document.setId(id);
+		document.setPath(path);
+		if(decription==null)
+			document.setDescription("test");
+		else
+			document.setDescription(decription);
+		document.setType("type/html");
+		document.setContent(text.getBytes());
+		document.setUser(user);
+		document.setDate(dateFormat.format(date));
+		userDocumentService.updateDocument(document);
+	}
+	
+	private String loadTop3News() throws IOException{
+		String top3="";
+		List<UserDocument> documents = userDocumentService.loadTop3News();
+		top3 = String.join("\n"
+
+				,"<ul> <li><a href=\"?Id="+ documents.get(0).getId() + "\">"
+				,	"<p>Create " + documents.get(0).getDate() + "</p>"
+				,	documents.get(0).getDescription().toUpperCase() + "</a></a> </li>"
+			
+			
+				,"<li><a href=\"?Id="+ documents.get(1).getId() + "\">"
+				,"<p>Create " + documents.get(1).getDate() + "</p>"
+				,	documents.get(1).getDescription().toUpperCase() + "</a></a> </li>"
+			
+			
+				,"<li><a href=\"?Id="+ documents.get(2).getId() + "\">"
+				,"<p>Create " + documents.get(2).getDate() + "</p>"
+				,	documents.get(2).getDescription().toUpperCase() + "</a></a> </li>"
+					
+			,"</ul>");
+		return top3;
 	}
 	
 }

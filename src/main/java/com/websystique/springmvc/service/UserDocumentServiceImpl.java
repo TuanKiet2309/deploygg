@@ -24,4 +24,21 @@ public class UserDocumentServiceImpl implements UserDocumentService{
 		dao.save(document);
 	}
 
+	@Override
+	public List<UserDocument> loadTop3News() {
+		return dao.findTop3();
+	}
+
+	@Override
+	public UserDocument findById(int id) {
+		// TODO Auto-generated method stub
+		return dao.findById(id);
+	}
+
+	@Override
+	public void updateDocument(UserDocument document) {
+		// TODO Auto-generated method stub
+		dao.update(document);
+	}
+
 }

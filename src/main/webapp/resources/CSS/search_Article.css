@@ -15,7 +15,9 @@
     padding-bottom: 5px;
     font-weight: bold;
 }
-
+.cke_button_label.cke_button__inlinecancel_label {
+    display: inline;
+}
 .content_lucene {
     float: left;
     padding: 15px 0px 10px 0px;

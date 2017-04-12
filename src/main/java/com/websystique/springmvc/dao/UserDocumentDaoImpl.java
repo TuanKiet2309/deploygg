@@ -1,6 +1,12 @@
 package com.websystique.springmvc.dao;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -17,14 +23,31 @@ public class UserDocumentDaoImpl extends AbstractDao<Integer, UserDocument> impl
 		Criteria crit = createEntityCriteria();
 		return (List<UserDocument>)crit.list();
 	}
-
+	@Override
+	public List<UserDocument> findTop3() {
+		Criteria crit = createEntityCriteria();
+		crit.add(Restrictions.eq("path", "/news"));
+		crit.addOrder(Order.desc("datetime"));
+		List<UserDocument> documents =  (List<UserDocument>)crit.list();
+		List<UserDocument> documentsTop3 =  new ArrayList();
+		documentsTop3.add(documents.get(0));
+		documentsTop3.add(documents.get(1));
+		documentsTop3.add(documents.get(2));
+		return documentsTop3;
+	}
+	
 	public void save(UserDocument document) {
 		persist(document);
 	}
 
-	
+	@Override
 	public UserDocument findById(int id) {
+		
 		return getByKey(id);
+	}
+
+	public void update(UserDocument document){
+		merge(document);
 	}
 
 	@SuppressWarnings("unchecked")
