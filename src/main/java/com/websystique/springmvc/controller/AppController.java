@@ -39,7 +39,6 @@ import com.websystique.springmvc.model.User;
 import com.websystique.springmvc.model.UserDocument;
 import com.websystique.springmvc.service.UserDocumentService;
 import com.websystique.springmvc.service.UserService;
-import com.websystique.springmvc.util.FileValidator;
 
 
 
@@ -55,14 +54,7 @@ public class AppController {
 	
 	@Autowired
 	MessageSource messageSource;
-
-	@Autowired
-	FileValidator fileValidator;
 	
-	@InitBinder("fileBucket")
-	protected void initBinder(WebDataBinder binder) {
-	   binder.setValidator(fileValidator);
-	}
 	
 	/**
 	 * This method will list all existing users.
