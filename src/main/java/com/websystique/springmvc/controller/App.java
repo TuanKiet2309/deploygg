@@ -18,7 +18,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 @SuppressWarnings("deprecation")
 @ComponentScan(basePackages = "com.websystique.springmvc")
 @SpringBootApplication(scanBasePackages = {"com.websystique.springmvc"})
-@ComponentScan
 public class App extends SpringBootServletInitializer
 {
 	@Override
