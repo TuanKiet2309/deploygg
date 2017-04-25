@@ -154,7 +154,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            
         </dependency>
   </dependencies>
   <build>
@@ -184,7 +184,7 @@
      <artifactId>jetty-maven-plugin</artifactId>
      <version>9.3.0.v20150612</version>
    </plugin> -->
-   <plugin>
+   <!-- <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-compiler-plugin</artifactId>
     <version>3.1</version>
@@ -192,7 +192,7 @@
         <source>1.7</source>
         <target>1.7</target>
     </configuration>
-</plugin>
+</plugin> -->
         </plugins>
         <pluginManagement>
 			<plugins>
