@@ -233,7 +233,7 @@ public class AppController {
 	private String loadTop3News() throws IOException{
 		String top3="";
 		List<UserDocument> documents = userDocumentService.loadTop3News();
-		top3 = String.join("\n"
+		/*top3 = String.join("\n"
 
 				,"<ul> <li><a href=\"?Id="+ documents.get(0).getId() + "\">"
 				,	"<p>Create " + documents.get(0).getDate() + "</p>"
@@ -249,7 +249,7 @@ public class AppController {
 				,"<p>Create " + documents.get(2).getDate() + "</p>"
 				,	documents.get(2).getDescription().toUpperCase() + "</a></a> </li>"
 					
-			,"</ul>");
+			,"</ul>");*/
 		return top3;
 	}
 	
